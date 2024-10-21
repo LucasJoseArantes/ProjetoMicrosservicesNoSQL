@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-EssenzaApplication<essenza>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "essenza.example.com.essenza.EssenzaApplication",
+            "projectName": "essenza",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
