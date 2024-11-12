@@ -1,77 +1,60 @@
 package com.example.user_api.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import com.example.user_api.models.User;
+import com.example.user_api.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.user_api.dto.UserDTO;
-
-import jakarta.annotation.PostConstruct;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import jakarta.validation.Valid;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
+    private final UserService userService;
 
-    public static List<UserDTO> users = new ArrayList<UserDTO>();
-
-    @PostConstruct
-    public void initiateList() {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setName("Eduardo");
-        userDTO.setCpf("123");
-        userDTO.setAdress("Rua a");
-        userDTO.setEmail("eduardo@email.com");
-        userDTO.setPhone("1234-3454");
-        userDTO.setSignUpDate(LocalDateTime.now());
-        users.add(userDTO);
-
-    UserDTO anotherUserDTO = new UserDTO();
-    anotherUserDTO.setName("Maria");
-    anotherUserDTO.setCpf("456");
-    anotherUserDTO.setAdress("Rua b");
-    anotherUserDTO.setEmail("maria@email.com");
-    anotherUserDTO.setPhone("5678-9101");
-    anotherUserDTO.setSignUpDate(LocalDateTime.now());
-    users.add(anotherUserDTO);
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<UserDTO> getUsers() {
-        return users;
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
-    @GetMapping("/{cpf}")
-    public UserDTO getUserByCpf(@PathVariable String cpf) {
-        return users.stream()
-            .filter(user -> user.getCpf().equals(cpf))
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    @GetMapping("/{id}")
+    public Optional<User> getUserById(@PathVariable String id) {
+        return userService.findById(id);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDTO createUser(@Valid @RequestBody UserDTO userDTO) {
-        userDTO.setSignUpDate(LocalDateTime.now());
-        users.add(userDTO);
-        return userDTO;
+    public User createUser(@RequestBody User user) {
+        return userService.save(user);
     }
 
-    @DeleteMapping("/{cpf}")
-    public boolean deleteUser(@PathVariable String cpf) {
-        return users.removeIf(user -> user.getCpf().equals(cpf));
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable String id, @RequestBody User user) {
+        return userService.updateUser(id, user);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable String id) {
+        userService.delete(id);
+    }
+
+    @GetMapping("/search")
+    public List<User> findByName(@RequestParam String name) {
+        return userService.findByName(name);
+    }
+
+    @GetMapping("/cpf/{cpf}")
+    public User findByCpf(@PathVariable String cpf) {
+        return userService.findByCpf(cpf);
+    }
+
+    @PatchMapping("/{id}")
+    public User patchUser(@PathVariable String id, @RequestBody User user) {
+        return userService.editUser(id, user);
+    }
 }

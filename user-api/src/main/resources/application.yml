@@ -1,0 +1,4 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://lucasjs:g1AMAv7Q3RNkDdVd@lucascluster.vj0cg.mongodb.net/<nomeDoBanco>?retryWrites=true&w=majority
