@@ -7,9 +7,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.util.Date;
 import java.util.List;
 
 @RestController
