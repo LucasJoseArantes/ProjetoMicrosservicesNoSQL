@@ -8,6 +8,7 @@ import com.lucasjose.api.shopping.shopping_api.repositories.ShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class ShopService {
     public ShopDTO findById(String id) {
         return shopRepository.findById(id)
             .map(ShopDTO::fromModel)
-            .orElse(null);
+            .orElseThrow(() -> new RuntimeException("Compra não encontrada com ID: " + id));
     }
 
     public List<ShopDTO> findByUser(String userIdentifier) {
@@ -44,22 +45,25 @@ public class ShopService {
         return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
-    public List<ShopDTO> findByDate(Date start, Date end) {
+    public List<ShopDTO> findByDate(LocalDateTime start, LocalDateTime end) {
         List<Shop> shops = shopRepository.findByDateBetween(start, end);
         return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
     public List<ShopDTO> findByProductIdentifier(String productIdentifier) {
         List<Shop> shops = shopRepository.findByItems_ProductIdentifier(productIdentifier);
+        if (shops.isEmpty()) {
+            throw new RuntimeException("Nenhuma compra encontrada com o identificador do produto: " + productIdentifier);
+        }
         return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
-    public List<ShopDTO> getShopsByFilter(Date dataInicio, Date dataFim, Double valorMinimo) {
-        List<Shop> shops = shopRepository.findByDateBetweenAndTotalGreaterThan(dataInicio, dataFim, valorMinimo);
-        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
-    }
+    public List<ShopDTO> getShopsByFilter(LocalDateTime dataInicio, LocalDateTime dataFim, Double valorMinimo) {
+    List<Shop> shops = shopRepository.findByDateBetweenAndTotalGreaterThan(dataInicio, dataFim, valorMinimo);
+    return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
+}
 
-    public List<ShopDTO> getReportByDate(Date dataInicio, Date dataFim) {
+    public List<ShopDTO> getReportByDate(LocalDateTime dataInicio, LocalDateTime dataFim) {
         List<Shop> shops = shopRepository.findByDateBetween(dataInicio, dataFim);
         return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }

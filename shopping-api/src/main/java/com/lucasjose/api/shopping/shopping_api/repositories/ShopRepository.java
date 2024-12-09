@@ -5,6 +5,7 @@ import com.lucasjose.api.shopping.shopping_api.model.Shop;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -24,10 +25,10 @@ public interface ShopRepository extends MongoRepository<Shop, String> {
     /**
      * Buscar compras em um intervalo de datas com valor total maior que o mínimo informado.
      */
-    List<Shop> findByDateBetweenAndTotalGreaterThan(Date start, Date end, Double totalMin);
+    List<Shop> findByDateBetweenAndTotalGreaterThan(LocalDateTime start, LocalDateTime end, Double totalMin);
 
     /**
      * Buscar compras no intervalo de datas para gerar relatório.
      */
-    List<Shop> findByDateBetween(Date dataInicio, Date dataFim);
+    List<Shop> findByDateBetween(LocalDateTime dataInicio, LocalDateTime dataFim);
 }
