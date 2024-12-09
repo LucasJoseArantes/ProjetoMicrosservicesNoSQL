@@ -1,19 +1,31 @@
 package com.lucasjose.api.shopping.shopping_api.model.DTO;
 
-import com.lucasjose.api.shopping.shopping_api.model.Item;
-import lombok.*;
+import com.lucasjose.api.shopping.shopping_api.model.Shop;
+import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ShopDTO {
+
     private String id;
     private String userIdentifier;
-    private Date date;
-    private List<Item> items;
+    private java.util.Date date;
+    private List<ItemDTO> items;
     private Double total;
+
+    // Construtor padrão
+    public ShopDTO() {}
+
+    // Construtor para mapear Shop para ShopDTO
+    public static ShopDTO fromModel(Shop shop) {
+        ShopDTO dto = new ShopDTO();
+        dto.setId(shop.getId());
+        dto.setUserIdentifier(shop.getUserIdentifier());
+        dto.setDate(shop.getDate());
+        dto.setTotal(shop.getTotal());
+        dto.setItems(shop.getItems().stream().map(ItemDTO::fromModel).collect(Collectors.toList()));
+        return dto;
+    }
 }

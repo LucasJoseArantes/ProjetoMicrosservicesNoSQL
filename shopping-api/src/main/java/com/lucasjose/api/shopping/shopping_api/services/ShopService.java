@@ -1,6 +1,8 @@
 package com.lucasjose.api.shopping.shopping_api.services;
 
+import com.lucasjose.api.shopping.shopping_api.model.DTO.ItemDTO;
 import com.lucasjose.api.shopping.shopping_api.model.DTO.ShopDTO;
+import com.lucasjose.api.shopping.shopping_api.model.Item;
 import com.lucasjose.api.shopping.shopping_api.model.Shop;
 import com.lucasjose.api.shopping.shopping_api.repositories.ShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,38 +24,44 @@ public class ShopService {
 
     public List<ShopDTO> getAll() {
         List<Shop> shops = shopRepository.findAll();
-        return shops.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
     public ShopDTO save(ShopDTO shopDTO) {
         Shop shop = convertToEntity(shopDTO);
         Shop savedShop = shopRepository.save(shop);
-        return convertToDTO(savedShop);
+        return ShopDTO.fromModel(savedShop);
     }
 
     public ShopDTO findById(String id) {
-        Shop shop = shopRepository.findById(id).orElse(null);
-        return shop != null ? convertToDTO(shop) : null;
+        return shopRepository.findById(id)
+            .map(ShopDTO::fromModel)
+            .orElse(null);
     }
 
     public List<ShopDTO> findByUser(String userIdentifier) {
         List<Shop> shops = shopRepository.findByUserIdentifier(userIdentifier);
-        return shops.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
     public List<ShopDTO> findByDate(Date start, Date end) {
         List<Shop> shops = shopRepository.findByDateBetween(start, end);
-        return shops.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
-    private ShopDTO convertToDTO(Shop shop) {
-        return ShopDTO.builder()
-            .id(shop.getId())
-            .userIdentifier(shop.getUserIdentifier())
-            .date(shop.getDate())
-            .items(shop.getItems())
-            .total(shop.getTotal())
-            .build();
+    public List<ShopDTO> findByProductIdentifier(String productIdentifier) {
+        List<Shop> shops = shopRepository.findByItems_ProductIdentifier(productIdentifier);
+        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
+    }
+
+    public List<ShopDTO> getShopsByFilter(Date dataInicio, Date dataFim, Double valorMinimo) {
+        List<Shop> shops = shopRepository.findByDateBetweenAndTotalGreaterThan(dataInicio, dataFim, valorMinimo);
+        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
+    }
+
+    public List<ShopDTO> getReportByDate(Date dataInicio, Date dataFim) {
+        List<Shop> shops = shopRepository.findByDateBetween(dataInicio, dataFim);
+        return shops.stream().map(ShopDTO::fromModel).collect(Collectors.toList());
     }
 
     private Shop convertToEntity(ShopDTO shopDTO) {
@@ -61,8 +69,17 @@ public class ShopService {
             .id(shopDTO.getId())
             .userIdentifier(shopDTO.getUserIdentifier())
             .date(shopDTO.getDate())
-            .items(shopDTO.getItems())
+            .items(convertToEntity(shopDTO.getItems())) // Converte os itens de DTO para Entity
             .total(shopDTO.getTotal())
             .build();
+    }
+
+    private List<Item> convertToEntity(List<ItemDTO> itemDTOs) {
+        return itemDTOs.stream()
+            .map(dto -> Item.builder()
+                .productIdentifier(dto.getProductIdentifier())
+                .price(dto.getPrice())
+                .build())
+            .collect(Collectors.toList());
     }
 }

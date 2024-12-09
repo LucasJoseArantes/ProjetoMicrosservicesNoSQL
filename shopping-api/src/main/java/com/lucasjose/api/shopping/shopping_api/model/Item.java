@@ -1,5 +1,10 @@
 package com.lucasjose.api.shopping.shopping_api.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.lucasjose.api.shopping.shopping_api.model.DTO.ItemDTO;
+
 import lombok.*;
 
 @Data
