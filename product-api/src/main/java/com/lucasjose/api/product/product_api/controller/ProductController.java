@@ -1,11 +1,15 @@
 package com.lucasjose.api.product.product_api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import com.lucasjose.api.product.product_api.model.Category;
 import com.lucasjose.api.product.product_api.model.Product;
+import com.lucasjose.api.product.product_api.services.CategoryService;
 import com.lucasjose.api.product.product_api.services.ProductService;
 
 @RestController
@@ -13,10 +17,12 @@ import com.lucasjose.api.product.product_api.services.ProductService;
 public class ProductController {
 
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, CategoryService categoryService) {
         this.productService = productService;
+        this.categoryService = categoryService;
     }
 
     // Endpoints para /product
@@ -29,33 +35,33 @@ public class ProductController {
 
     // GET /product/{id} - Retorna um produto pelo ID
     @GetMapping("/{id}")
-    public Product findById(@PathVariable String id) {
-        return productService.findProductById(id);
+    public Optional<Product> findProductById(@PathVariable String id) {
+        return productService.findById(id);
     }
 
     // POST /product - Cria um novo produto
     @PostMapping
-    public String saveProduct(@RequestBody Product product) {
+    public Product saveProduct(@RequestBody Product product) {
         return productService.saveProduct(product);
     }
 
     // PUT /product/{id} - Atualiza um produto pelo ID
     @PutMapping("/{id}")
-    public String updateProduct(@PathVariable String id, @RequestBody Product product) {
+    public Product updateProduct(@PathVariable String id, @RequestBody Product product) {
         return productService.updateProduct(id, product);
     }
 
     // DELETE /product/{id} - Deleta um produto pelo ID
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable String id) {
-        return productService.deleteProduct(id);
+    public void deleteProduct(@PathVariable String id) {
+        productService.deleteProduct(id);
     }
 
-    // GET /product/pageable - Retorna todos os produtos paginados
-    @GetMapping("/pageable")
-    public List<Product> getAllProductsPageable() {
-        return productService.getAllProductsPageable();
-    }
+    // // GET /product/pageable - Retorna todos os produtos paginados
+    // @GetMapping("/pageable")
+    // public List<Product> getAllProductsPageable(int page, int size) {
+    //     return productService.getAllProductsPageable(int page, int size);
+    // }
 
     // GET /product/category/{categoryId} - Retorna produtos por categoria
     @GetMapping("/category/{categoryId}")
@@ -73,31 +79,31 @@ public class ProductController {
 
     // GET /category - Retorna todas as categorias
     @GetMapping("/category")
-    public List<Product> getAllCategories() {
-        return productService.getAllCategory();
+    public List<Category> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     // POST /category - Cria uma nova categoria
     @PostMapping("/category")
-    public String saveCategory(@RequestBody Product product) {
-        return productService.saveCategory(product);
+    public Category saveCategory(@RequestBody Category category) {
+        return categoryService.saveCategory(category);
     }
 
     // PUT /category/{id} - Atualiza uma categoria pelo ID
     @PutMapping("/category/{id}")
-    public String updateCategory(@PathVariable String id, @RequestBody Product product) {
-        return productService.updateCategory(id, product);
+    public Category updateCategory(@PathVariable String id, @RequestBody Category category) {
+        return categoryService.updateCategory(id, category);
     }
 
     // DELETE /category/{id} - Deleta uma categoria pelo ID
     @DeleteMapping("/category/{id}")
-    public String deleteCategory(@PathVariable String id) {
-        return productService.deleteCategory(id);
+    public void deleteCategory(@PathVariable String id) {
+        categoryService.deleteCategory(id);
     }
 
     // GET /category/pageable - Retorna todas as categorias paginadas
     @GetMapping("/category/pageable")
-    public List<Product> getAllCategoriesPageable() {
-        return productService.getAllCategoryPageable();
+    public Page<Category> getAllCategoriesPageable(int page, int size) {
+        return categoryService.getAllCategoriesPageable(page, size);
     }
 }
