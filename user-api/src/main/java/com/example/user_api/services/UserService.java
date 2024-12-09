@@ -1,4 +1,4 @@
-package com.example.user_api.service;
+package com.example.user_api.services;
 
 import com.example.user_api.models.User;
 import com.example.user_api.repository.UserRepository;
